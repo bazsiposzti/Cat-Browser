@@ -25,4 +25,4 @@ Thumbs.db
 
 # Build outputs (ha később lesz)
 dist/
-build/
+build/node_modules/
