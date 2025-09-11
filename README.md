@@ -2,6 +2,6 @@ Ez egy kisebb web alkalmazás amit https://thecatapi.com/ segítsége által hoz
 
 Funkciók
 
-Macskafajták listázása dropdown menüben
-Kiválasztott fajta képének megjelenítése
-Fajta információk megjelenítése (név, temperamentum)
+Macskafajták listázása dropdown menüben,
+Kiválasztott fajta képének megjelenítése,
+Fajta információk megjelenítése (név,	temperamentum)
