@@ -1,64 +1,47 @@
-require('dotenv').config()
+require("dotenv").config();
+const express = require("express");
+const fetch = require("node-fetch");
+const cors = require("cors");
+const path = require("path");
 
-const fetch = require('node-fetch')
+
+const app = express();
+const PORT = 3000;
+
+app.use(cors()); // lehetővé teszi a frontend hozzáférést
+app.use(express.static(path.join(__dirname, "public")));
 
 const url = "https://api.thecatapi.com/v1/images/search";
 const breedUrl = "https://api.thecatapi.com/v1/breeds";
-const apikey = process.env.API_KEY;
 
-const selectBreed = document.getElementById("breedSelect");
-const breedImg = document.getElementById("breedImage");
-const breedInfo = document.getElementById("breedInfo");
-
-async function selectBreeds() {
+// Cat breed list
+app.get("/api/breeds", async (req, res) => {
   try {
-    const result = await fetch(breedUrl, {
-      headers: {
-        "x-api-key": apikey,
-      },
+    const result = await fetch("https://api.thecatapi.com/v1/breeds", {
+      headers: { "x-api-key": process.env.API_KEY }
     });
-
+    console.log("Status code:", result.status); 
     const data = await result.json();
-    data.forEach((breed) => {
-      const option = document.createElement("option");
-      option.value = breed.id;
-      option.textContent = breed.name;
-      selectBreed.appendChild(option);
-    });
+    res.json(data);
   } catch (err) {
-    console.error("Error:", err);
+    res.status(500).json({ error: "Error fetching breeds" });
   }
-}
-
-selectBreeds();
-
-async function catImages(breedId) {
-  const breedImgUrl = `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`;
-  try {
-    const imageResult = await fetch(breedImgUrl, {
-      headers: {
-        "x-api-key": apikey,
-      },
-    });
-    const breeds = await imageResult.json();
-    const cat = breeds[0];
-    if (!cat || !cat.breeds || !cat.breeds[0]) {
-      breedInfo.textcontent = "No information about this cat breed.";
-      breedImg.src = "";
-      return;
-    }
-    const breed = cat.breeds[0];
-    breedImg.src = cat.url;
-    breedImg.alt = breed.name;
-    breedInfo.textContent = `${breed.name} - ${breed.temperament}`;
-  } catch (err) {
-    console.error("Error:", err);
-  }
-}
-
-selectBreed.addEventListener("change", () => {
-  const breedId = selectBreed.value;
-  if (!breedId) return;
-  catImages(breedId);
 });
 
+// Cat image by breed
+app.get("/api/cat/:breedId", async (req, res) => {
+  try {
+    const breedId = req.params.breedId;
+    const result = await fetch(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`, {
+      headers: { "x-api-key": process.env.API_KEY }
+    });
+    const data = await result.json();
+    res.json(data[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching cat image" });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
+});
