@@ -11,13 +11,13 @@ const PORT = 3000;
 app.use(cors()); // lehetővé teszi a frontend hozzáférést
 app.use(express.static(path.join(__dirname, "public")));
 
-const url = "https://api.thecatapi.com/v1/images/search";
+
 const breedUrl = "https://api.thecatapi.com/v1/breeds";
 
 // Cat breed list
 app.get("/api/breeds", async (req, res) => {
   try {
-    const result = await fetch("https://api.thecatapi.com/v1/breeds", {
+    const result = await fetch(breedUrl, {
       headers: { "x-api-key": process.env.API_KEY }
     });
     console.log("Status code:", result.status); 
